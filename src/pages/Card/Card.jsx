@@ -1,26 +1,58 @@
-import React, { useContext, useState } from 'react';
-import './Card.css';
-import { StoreContext } from '../../components/context/StoreContext';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useContext, useState } from "react";
+import "./Card.css";
+import { StoreContext } from "../../components/context/StoreContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const Card = () => {
-  const { cartItems, food_list, removeFromCart, getTotalAmount } = useContext(StoreContext);
-  const [tableNumber, setTableNumber] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const { cartItems, food_list, removeFromCart, getTotalAmount } =
+    useContext(StoreContext);
+  const [tableNumber, setTableNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  const handleProceedToOrder = () => {
+  const handleProceedToOrder = async () => {
     if (tableNumber && phoneNumber && getTotalAmount() > 0) {
       // Generate a 5 character long alphanumeric unique ID
       const orderId = Math.random().toString(36).substring(2, 7).toUpperCase();
-      toast.success(`Order is successfully placed. Your Order ID is ${orderId}`);
+
+      const items = Object.keys(cartItems).map((itemId) => ({
+        id: itemId,
+        quantity: cartItems[itemId],
+      }));
+
+      const orderData = {
+        id: orderId,
+        table_number: tableNumber,
+        phone_number: phoneNumber,
+        items: items,
+      };
+
+      try {
+        const response = await axios.post(
+          "http://16.171.161.210/place_order",
+          orderData
+        );
+        console.log(response.data);
+        toast.success(
+          `Order is successfully placed. Your Order ID is ${orderId}`
+        );
+      } catch (error) {
+        console.error(
+          "Error placing order:",
+          error.response ? error.response.data : error.message
+        );
+        toast.error("Failed to place your order. Please try again.");
+      }
     } else {
-      toast.error('Fail to place your order. Please enter valid table number, phone number, and ensure your cart is not empty.');
+      toast.error(
+        "Fail to place your order. Please enter valid table number, phone number, and ensure your cart is not empty."
+      );
     }
   };
 
   return (
-    <div className='cart'>
+    <div className="cart">
       <ToastContainer />
       <div className="cart-items">
         <div className="cart-items-titles">
@@ -33,22 +65,25 @@ const Card = () => {
         </div>
         <br />
         <hr />
-        {food_list.map((item, index) => {
-          if (cartItems[item._id] > 0) {
+        {food_list.map((item) => {
+          if (cartItems[item.id] > 0) {
             return (
-              <div key={item._id}>
+              <div key={item.id}>
                 <div className="cart-items-titles cart-items-item">
-                  <img src={item.image} alt="" />
+                  <img src={`http://16.171.161.210${item.image}`} alt="" />
                   <p>{item.name}</p>
                   <p>Nu.{item.price}</p>
-                  <p>{cartItems[item._id]}</p>
-                  <p>Nu.{item.price * cartItems[item._id]}</p>
-                  <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
+                  <p>{cartItems[item.id]}</p>
+                  <p>Nu.{item.price * cartItems[item.id]}</p>
+                  <p onClick={() => removeFromCart(item.id)} className="cross">
+                    x
+                  </p>
                 </div>
                 <hr />
               </div>
             );
           }
+          return null;
         })}
       </div>
       <div className="cart-bottom">
@@ -61,7 +96,7 @@ const Card = () => {
                 <input
                   type="number"
                   className="input-number"
-                  placeholder='Table No'
+                  placeholder="Table No"
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value)}
                   required
@@ -72,7 +107,7 @@ const Card = () => {
                 <input
                   type="number"
                   className="input-number"
-                  placeholder='Phone No'
+                  placeholder="Phone No"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   required
@@ -86,8 +121,8 @@ const Card = () => {
             </div>
           </div>
           <button
-            type='submit'
-            className='proceed-to-order'
+            type="submit"
+            className="proceed-to-order"
             onClick={handleProceedToOrder}
           >
             Proceed To Order
@@ -96,6 +131,6 @@ const Card = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Card;
