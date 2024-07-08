@@ -30,7 +30,7 @@ const Card = () => {
 
       try {
         const response = await axios.post(
-          "https://16.171.161.210/place_order",
+          "http://16.171.161.210/place_order",
           orderData
         );
         console.log(response.data);
@@ -70,7 +70,7 @@ const Card = () => {
             return (
               <div key={item.id}>
                 <div className="cart-items-titles cart-items-item">
-                  <img src={`https://16.171.161.210${item.image}`} alt="" />
+                  <img src={`http://16.171.161.210${item.image}`} alt="" />
                   <p>{item.name}</p>
                   <p>Nu.{item.price}</p>
                   <p>{cartItems[item.id]}</p>
