@@ -10,7 +10,7 @@ const ExploreMenu = ({ category, setCategory }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://16.171.161.210/foodtypes");
+        const response = await axios.get("https://16.171.161.210/foodtypes");
         setData(response.data);
         setLoading(false);
       } catch (error) {
@@ -45,7 +45,7 @@ const ExploreMenu = ({ category, setCategory }) => {
             >
               <img
                 className={category === item.name ? "active" : ""}
-                src={`http://16.171.161.210${item.image}`}
+                src={`https://16.171.161.210${item.image}`}
                 alt=""
               />
               <p>{item.name}</p>
