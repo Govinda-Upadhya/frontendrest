@@ -12,7 +12,7 @@ const StoreContextProvider = (props) => {
   useEffect(() => {
     const fetchFoodItems = async () => {
       try {
-        const response = await axios.get("http://16.171.161.210/fooditems");
+        const response = await axios.get("https://govrestaurant.com/fooditems");
         setFoodList(response.data);
         setLoading(false);
       } catch (error) {
